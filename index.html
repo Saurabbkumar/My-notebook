@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real-Time Clock & Digital Notebook</title>
+  <title>Ultimate Digital Notebook & Excel Bill Book</title>
   <style>
     :root {
       --bg-dark: #121212;
-      --card-dark: #1e1e1e;
       --sidebar-bg: #f8f9fa;
       --app-bg: #efeee9;
       --accent-blue: #2563eb;
@@ -18,7 +17,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Courier New', Courier, monospace;
     }
 
     body {
@@ -86,34 +85,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: 'Courier New', Courier, monospace;
       color: #1a2615;
     }
 
-    .lcd-left {
-      text-align: left;
-    }
-    .lcd-label {
-      font-size: 8px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-    .lcd-date-val {
-      font-size: 16px;
-      font-weight: bold;
-      line-height: 1;
-    }
-    .lcd-right {
-      text-align: right;
-    }
-    .lcd-time-val {
-      font-size: 10px;
-      font-weight: bold;
-    }
-    .lcd-day-val {
-      font-size: 8px;
-      text-transform: uppercase;
-    }
+    .lcd-left { text-align: left; }
+    .lcd-label { font-size: 8px; font-weight: bold; letter-spacing: 1px; }
+    .lcd-date-val { font-size: 16px; font-weight: bold; line-height: 1; }
+    .lcd-right { text-align: right; }
+    .lcd-time-val { font-size: 10px; font-weight: bold; }
+    .lcd-day-val { font-size: 8px; text-transform: uppercase; }
 
     .hand {
       position: absolute;
@@ -124,441 +104,164 @@
       z-index: 10;
     }
 
-    .hour-hand {
-      width: 6px;
-      height: 65px;
-      background-color: #111;
-    }
-
-    .minute-hand {
-      width: 4px;
-      height: 95px;
-      background-color: #222;
-    }
-
-    .second-hand {
-      width: 2px;
-      height: 105px;
-      background-color: #d97706;
-      z-index: 12;
-    }
-
+    .hour-hand { width: 6px; height: 65px; background-color: #111; }
+    .minute-hand { width: 4px; height: 95px; background-color: #222; }
+    .second-hand { width: 2px; height: 105px; background-color: #d97706; z-index: 12; }
     .clock-center {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #d97706;
-      z-index: 13;
-      border: 2px solid #fff;
+      position: absolute; width: 12px; height: 12px; border-radius: 50%;
+      background: #d97706; z-index: 13; border: 2px solid #fff;
     }
 
     .open-btn {
-      background: transparent;
-      border: 1px solid #555;
-      color: white;
-      padding: 14px 40px;
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 85%;
-      max-width: 340px;
+      background: transparent; border: 1px solid #555; color: white;
+      padding: 14px 40px; font-size: 16px; font-weight: 600;
+      letter-spacing: 1.5px; border-radius: 8px; cursor: pointer;
+      width: 85%; max-width: 340px;
     }
 
-    .open-btn:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: #888;
-    }
-
-    .sub-text {
-      margin-top: 20px;
-      font-size: 12px;
-      letter-spacing: 3px;
-      color: #777;
-    }
+    .sub-text { margin-top: 20px; font-size: 12px; letter-spacing: 3px; color: #777; }
 
     /* Modals */
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6); display: none;
+      align-items: center; justify-content: center; z-index: 100;
       backdrop-filter: blur(4px);
     }
 
     .pin-card {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 340px;
-      text-align: center;
+      background: white; padding: 24px; border-radius: 16px;
+      width: 90%; max-width: 340px; text-align: center;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
 
-    .pin-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #111;
-    }
+    .pin-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #111; }
+    .pin-sub { font-size: 12px; color: #666; margin-bottom: 20px; }
 
-    .pin-sub {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 20px;
-    }
-
-    .pin-input-group {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
+    .pin-input-group { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
     .pin-digit {
-      width: 45px;
-      height: 50px;
-      font-size: 22px;
-      text-align: center;
-      border: 1.5px solid #ccc;
-      border-radius: 8px;
-      font-weight: bold;
+      width: 45px; height: 50px; font-size: 22px; text-align: center;
+      border: 1.5px solid #ccc; border-radius: 8px; font-weight: bold;
     }
-
-    .pin-digit:focus {
-      border-color: var(--accent-blue);
-      outline: none;
-    }
-
-    .pin-error {
-      color: #dc2626;
-      font-size: 12px;
-      margin-bottom: 12px;
-      display: none;
-    }
+    .pin-digit:focus { border-color: var(--accent-blue); outline: none; }
+    .pin-error { color: #dc2626; font-size: 12px; margin-bottom: 12px; display: none; }
 
     .btn-primary {
-      background: var(--accent-blue);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      width: 100%;
-      cursor: pointer;
+      background: var(--accent-blue); color: white; border: none;
+      padding: 12px 20px; border-radius: 8px; font-weight: 600; width: 100%; cursor: pointer;
     }
 
     /* Screen 2: Notebook App */
-    #app-screen {
-      display: none;
-      height: 100vh;
-      background: var(--app-bg);
-      position: relative;
-    }
+    #app-screen { display: none; height: 100vh; background: var(--app-bg); position: relative; }
+    .app-container { display: flex; height: 100%; width: 100%; background: white; position: relative; overflow: hidden; }
 
-    .app-container {
-      display: flex;
-      height: 100%;
-      width: 100%;
-      background: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Mobile Drawer Sidebar Overlay */
     .sidebar-overlay {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 15;
-      display: none;
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4); z-index: 15; display: none;
     }
 
-    /* Sidebar Drawer Slide */
     .sidebar {
-      width: 260px;
-      background: var(--sidebar-bg);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      height: 100%;
-      position: absolute;
-      left: -260px;
-      top: 0;
-      z-index: 20;
-      transition: left 0.3s ease;
+      width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color);
+      display: flex; flex-direction: column; padding: 16px; height: 100%;
+      position: absolute; left: -260px; top: 0; z-index: 20; transition: left 0.3s ease;
     }
+    .sidebar.open { left: 0; }
 
-    .sidebar.open {
-      left: 0;
-    }
-
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
+    .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .search-box {
-      background: #eee;
-      border-radius: 6px;
-      padding: 6px 10px;
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
+      background: #eee; border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; margin-bottom: 20px;
     }
-
-    .search-box input {
-      border: none;
-      background: transparent;
-      width: 100%;
-      outline: none;
-      font-size: 13px;
-      margin-left: 6px;
-    }
+    .search-box input { border: none; background: transparent; width: 100%; outline: none; font-size: 13px; margin-left: 6px; }
 
     .menu-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px;
-      border-radius: 6px;
-      color: #444;
-      font-size: 14px;
-      cursor: pointer;
-      margin-bottom: 2px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px; border-radius: 6px; color: #444; font-size: 14px; cursor: pointer; margin-bottom: 2px;
     }
+    .menu-item.active { background: #e5e7eb; font-weight: 600; color: #111; }
+    .section-title { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 0.5px; margin: 16px 0 8px 10px; }
+    .subject-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 10px; }
 
-    .menu-item.active {
-      background: #e5e7eb;
-      font-weight: 600;
-      color: #111;
-    }
+    .main-content { flex: 1; display: flex; flex-direction: column; background: #fcfbf7; overflow-y: auto; width: 100%; }
+    .main-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; }
+    .menu-toggle-btn { background: #e5e7eb; border: none; padding: 8px 12px; border-radius: 6px; font-size: 18px; cursor: pointer; margin-right: 10px; }
+    .main-title { font-size: 22px; font-family: serif; flex: 1; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-add { background: var(--accent-blue); color: white; border: none; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-lock { background: #e5e7eb; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer; }
 
-    .section-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      color: #888;
-      letter-spacing: 0.5px;
-      margin: 16px 0 8px 10px;
-    }
-
-    .subject-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 10px;
-    }
-
-    /* Main Area */
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: #fcfbf7;
-      overflow-y: auto;
-      width: 100%;
-    }
-
-    .main-header {
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #eee;
-    }
-
-    .menu-toggle-btn {
-      background: #e5e7eb;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 18px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    .main-title {
-      font-size: 22px;
-      font-family: serif;
-      flex: 1;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .btn-add {
-      background: var(--accent-blue);
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-lock {
-      background: #e5e7eb;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    /* Grid View Notes */
-    .notes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
-
+    .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 20px; }
     .note-card {
-      background: white;
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
-      padding: 10px;
-      height: 190px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-      cursor: pointer;
-      position: relative;
+      background: white; border-radius: 8px; border: 1px solid #e0e0e0;
+      padding: 10px; height: 190px; display: flex; flex-direction: column;
+      justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; position: relative;
     }
-
     .card-preview {
-      background: #fdfbf7;
-      border: 1px solid #f0efe8;
-      height: 110px;
-      border-radius: 4px;
-      padding: 8px;
-      font-size: 10px;
-      overflow: hidden;
-      color: #555;
+      background: #fdfbf7; border: 1px solid #f0efe8; height: 110px;
+      border-radius: 4px; padding: 8px; font-size: 10px; overflow: hidden; color: #555;
     }
-
-    .card-title {
-      font-weight: bold;
-      font-size: 12px;
-      margin-top: 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card-date {
-      font-size: 9px;
-      color: #888;
-    }
-
+    .card-title { font-weight: bold; font-size: 12px; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-date { font-size: 9px; color: #888; }
     .card-delete-btn {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      background: rgba(220, 38, 38, 0.9);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 5;
+      position: absolute; top: 6px; right: 6px; background: rgba(220, 38, 38, 0.9);
+      color: white; border: none; border-radius: 50%; width: 22px; height: 22px;
+      font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 5;
     }
 
-    /* Form inputs */
-    .form-group {
-      text-align: left;
-      margin-bottom: 12px;
-    }
+    .form-group { text-align: left; margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #444; }
+    .form-control { width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+    .form-row { display: flex; gap: 10px; }
 
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #444;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 13px;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    /* Multi-Page Notebook Modal */
+    /* Multi-Page Notebook Modal & Excel/Word Toolbar */
     .notebook-viewer-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 200; padding: 10px;
+    }
+    .notebook-paper {
+      width: 100%; max-width: 560px; height: 95vh; background: #fefef9;
+      border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column; padding: 14px; position: relative;
+    }
+    .notebook-header { display: flex; justify-content: space-between; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; margin-bottom: 6px; }
+    .notebook-meta-box { background: #f5f5f0; padding: 4px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #e0e0e0; }
+    .notebook-topic { font-size: 15px; font-weight: bold; margin: 4px 0; border-bottom: 1px solid #ccc; padding-bottom: 4px; color: #222; }
+
+    /* EXCEL / WORD PROFESSIONAL TOOLBAR */
+    .notebook-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      background: #f1f0ea;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #dcdac5;
+      margin-bottom: 8px;
       align-items: center;
-      justify-content: center;
-      z-index: 200;
-      padding: 10px;
+    }
+    .tool-btn {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tool-btn:hover { background: #e5e7eb; }
+    .tool-select {
+      padding: 2px 4px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 11px;
+      background: white;
     }
 
-    .notebook-paper {
-      width: 100%;
-      max-width: 480px;
-      height: 90vh;
-      background: #fefef9;
-      border-radius: 6px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    .editor-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      position: relative;
-    }
-
-    .notebook-header {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 2px solid #e0e0e0;
-      padding-bottom: 8px;
-      margin-bottom: 8px;
-    }
-
-    .notebook-meta-box {
-      background: #f5f5f0;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      border: 1px solid #e0e0e0;
-    }
-
-    .notebook-topic {
-      font-size: 15px;
-      font-weight: bold;
-      margin: 6px 0;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 4px;
-      color: #222;
     }
 
     .notebook-editor {
@@ -566,65 +269,24 @@
       width: 100%;
       border: none;
       outline: none;
-      resize: none;
       font-size: 14px;
       line-height: 26px;
       background: transparent;
       color: #222;
+      overflow-y: auto;
+      padding: 4px;
     }
 
-    /* Page styles */
-    .pattern-lined {
-      background-image: linear-gradient(#e5e7eb 1px, transparent 1px);
-      background-size: 100% 26px;
-    }
+    .pattern-lined { background-image: linear-gradient(#e5e7eb 1px, transparent 1px); background-size: 100% 26px; }
+    .pattern-grid { background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px); background-size: 20px 20px; }
+    .pattern-blank { background-image: none; }
 
-    .pattern-grid {
-      background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px);
-      background-size: 20px 20px;
-    }
-
-    .pattern-blank {
-      background-image: none;
-    }
-
-    .notebook-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid #e0e0e0;
-      padding-top: 10px;
-      margin-top: 10px;
-    }
-
-    .page-nav-btn {
-      background: #333;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .page-nav-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-
+    .notebook-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e0e0e0; padding-top: 8px; margin-top: 6px; }
+    .page-nav-btn { background: #333; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+    .page-nav-btn:disabled { background: #ccc; cursor: not-allowed; }
     .close-notebook-btn {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      background: #dc2626;
-      color: white;
-      border: none;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      position: absolute; top: -10px; right: -10px; background: #dc2626; color: white;
+      border: none; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
   </style>
 </head>
@@ -694,7 +356,7 @@
 
       <div class="form-group">
         <label>Name (Notebook Title)</label>
-        <input type="text" id="new-name" class="form-control" placeholder="e.g. My Science Notes">
+        <input type="text" id="new-name" class="form-control" placeholder="e.g. Shop Bill Book 2026">
       </div>
 
       <div class="form-row">
@@ -705,18 +367,18 @@
         <div class="form-group" style="flex:1;">
           <label>Page Type</label>
           <select id="new-type" class="form-control">
+            <option value="grid">Grid / Graph (Best for Bill)</option>
             <option value="lined">Lined / Ruled</option>
             <option value="blank">Plain / Blank</option>
-            <option value="grid">Grid / Graph</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Subbuu</label>
+        <label>Subject</label>
         <select id="new-subject" class="form-control">
-          <option value="Recipes">Subbuu</option>
-          <option value="Organic Chemistry">Subbuu story..</option>
+          <option value="Recipes">Recipes</option>
+          <option value="Organic Chemistry">Organic Chemistry</option>
           <option value="Interviews">Interviews</option>
           <option value="Algebra">Algebra</option>
           <option value="Personal">Personal</option>
@@ -725,7 +387,7 @@
 
       <div class="form-group">
         <label>Topic</label>
-        <input type="text" id="new-topic" class="form-control" placeholder="e.g. Chapter 1: Introduction">
+        <input type="text" id="new-topic" class="form-control" placeholder="e.g. Daily Accounts & Billing">
       </div>
 
       <button class="btn-primary" style="margin-top: 10px;" onclick="saveNewNotebook()">Create Notebook</button>
@@ -736,10 +398,8 @@
   <div id="app-screen">
     <div class="app-container">
       
-      <!-- Drawer Overlay for Mobile -->
       <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-      <!-- Slide-in Sidebar -->
       <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
           <span style="font-weight: bold; font-size: 16px;">📁 Workspace</span>
@@ -756,23 +416,22 @@
         
         <div class="section-title">Subjects</div>
         <div class="menu-item" onclick="filterCategory('Organic Chemistry')">
-          <span><span class="subject-dot" style="background: #f43f5e;"></span>subbuu</span>
+          <span><span class="subject-dot" style="background: #f43f5e;"></span>Organic Chemistry</span>
         </div>
         <div class="menu-item" onclick="filterCategory('Interviews')">
-          <span><span class="subject-dot" style="background: #f97316;"></span>coding</span>
+          <span><span class="subject-dot" style="background: #f97316;"></span>Interviews</span>
         </div>
         <div class="menu-item" onclick="filterCategory('Algebra')">
-          <span><span class="subject-dot" style="background: #3b82f6;"></span>gole</span>
+          <span><span class="subject-dot" style="background: #3b82f6;"></span>Algebra</span>
         </div>
         <div class="menu-item" onclick="filterCategory('Recipes')">
-          <span><span class="subject-dot" style="background: #8b5cf6;"></span>mind-setup-on</span>
+          <span><span class="subject-dot" style="background: #8b5cf6;"></span>Recipes</span>
         </div>
         <div class="menu-item" onclick="filterCategory('Personal')">
-          <span><span class="subject-dot" style="background: #10b981;"></span>billuu</span>
+          <span><span class="subject-dot" style="background: #10b981;"></span>Personal</span>
         </div>
       </div>
 
-      <!-- Main Section -->
       <div class="main-content">
         <div class="main-header">
           <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Toggle Menu">☰</button>
@@ -807,7 +466,63 @@
       <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase;" id="nb-name">NOTEBOOK NAME</div>
       <div class="notebook-topic" id="nb-topic">Topic Title</div>
 
-      <textarea class="notebook-editor pattern-lined" id="nb-content" placeholder="Start typing on this page..."></textarea>
+      <!-- EXCEL / WORD COMPLETE FORMATTING TOOLBAR -->
+      <div class="notebook-toolbar">
+        <button class="tool-btn" onclick="formatText('bold')" title="Bold"><b>B</b></button>
+        <button class="tool-btn" onclick="formatText('italic')" title="Italic"><i>I</i></button>
+        <button class="tool-btn" onclick="formatText('underline')" title="Underline"><u>U</u></button>
+        <button class="tool-btn" onclick="formatText('strikeThrough')" title="Strikethrough"><s>S</s></button>
+        <button class="tool-btn" onclick="formatText('hiliteColor', 'yellow')" style="background: #fef08a;" title="Highlight">💡</button>
+        
+        <select class="tool-select" onchange="formatText('foreColor', this.value)" title="Text Color">
+          <option value="">Color</option>
+          <option value="#000000">Black</option>
+          <option value="#2563eb">Blue</option>
+          <option value="#dc2626">Red</option>
+          <option value="#059669">Green</option>
+        </select>
+
+        <select class="tool-select" onchange="changeFontFamily(this.value)" title="Font Style">
+          <option value="">Font</option>
+          <option value="'Courier New', Courier, monospace">Courier (Bill)</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="monospace">Monospace</option>
+        </select>
+
+        <select class="tool-select" onchange="changeFontSize(this.value)" title="Font Size">
+          <option value="">Size</option>
+          <option value="12px">12px</option>
+          <option value="14px" selected>14px</option>
+          <option value="18px">18px</option>
+          <option value="22px">22px</option>
+        </select>
+
+        <select class="tool-select" onchange="changeLineSpacing(this.value)" title="Line Gap">
+          <option value="">Line Gap</option>
+          <option value="20px">Compact</option>
+          <option value="26px" selected>Normal</option>
+          <option value="36px">Wide</option>
+        </select>
+
+        <button class="tool-btn" onclick="formatText('justifyLeft')" title="Align Left">⬅</button>
+        <button class="tool-btn" onclick="formatText('justifyCenter')" title="Align Center">🗂️</button>
+        <button class="tool-btn" onclick="formatText('justifyRight')" title="Align Right">➡</button>
+
+        <button class="tool-btn" onclick="formatText('insertUnorderedList')" title="Bullet List">• List</button>
+        <button class="tool-btn" onclick="formatText('insertOrderedList')" title="Numbered List">1. List</button>
+        
+        <button class="tool-btn" onclick="formatText('indent')" title="Indent">➡ Indent</button>
+        <button class="tool-btn" onclick="formatText('outdent')" title="Outdent">⬅ Outdent</button>
+
+        <button class="tool-btn" onclick="formatText('removeFormat')" title="Clear Formatting">🧹 Reset</button>
+        <button class="tool-btn" onclick="clearPage()" style="background:#fee2e2; color:#991b1b;" title="Clear Page">🗑️ Clear Page</button>
+      </div>
+
+      <div class="editor-container">
+        <!-- ContentEditable Editor -->
+        <div class="notebook-editor pattern-grid" id="nb-content" contenteditable="true" placeholder="Start typing bills or tables..."></div>
+      </div>
 
       <div class="notebook-footer">
         <button class="page-nav-btn" id="btn-prev-page" onclick="changePage(-1)">❮ Previous Page</button>
@@ -818,7 +533,6 @@
   </div>
 
   <script>
-    // Real Time Analog & Digital Clock
     function updateClock() {
       const now = new Date();
       const seconds = now.getSeconds();
@@ -844,7 +558,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Toggle Sidebar Drawer
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebar-overlay');
@@ -857,7 +570,6 @@
       }
     }
 
-    // PIN Verification
     function showPinModal() {
       document.getElementById('pin-modal').style.display = 'flex';
       const inputs = document.querySelectorAll('.pin-digit');
@@ -877,7 +589,7 @@
       let pin = '';
       digits.forEach(d => pin += d.value);
 
-      if (pin === '9517' || pin === '') { 
+      if (pin === '1234' || pin === '') { 
         document.getElementById('pin-modal').style.display = 'none';
         document.getElementById('clock-screen').style.display = 'none';
         document.getElementById('app-screen').style.display = 'block';
@@ -892,29 +604,22 @@
       document.getElementById('clock-screen').style.display = 'flex';
     }
 
-    // Default Notebooks Data
-    let notebooks = [
+    let notebooks = JSON.parse(localStorage.getItem('my_digital_notebooks')) || [
       {
         id: 1,
-        name: "Chicken & Dumplings",
-        subject: "Recipes",
-        topic: "Comfort Food Recipe",
+        name: "Shop Bill Book",
+        subject: "Personal",
+        topic: "Daily Billing & Items",
         totalPages: 5,
-        pageType: "lined",
+        pageType: "grid",
         date: "1/8/2026",
-        pagesData: { 1: "Ingredients:\n- 1 lb chicken\n- Dumpling mix\n- Celery & Carrots" }
-      },
-      {
-        id: 2,
-        name: "Honey Cake Recipe",
-        subject: "Recipes",
-        topic: "Traditional Honey Cake",
-        totalPages: 3,
-        pageType: "lined",
-        date: "11/10/2025",
-        pagesData: { 1: "Boil honey and butter together..." }
+        pagesData: { 1: "ITEM NAME     QTY   PRICE\n-------------------------\nSugar 5kg      2    450/-\nTea Leaf 250g  1    140/-" }
       }
     ];
+
+    function saveToStorage() {
+      localStorage.setItem('my_digital_notebooks', JSON.stringify(notebooks));
+    }
 
     let currentFilter = "All";
     let activeNotebook = null;
@@ -939,7 +644,7 @@
         card.innerHTML = `
           <button class="card-delete-btn" onclick="deleteNotebook(event, ${nb.id})" title="Delete Notebook">🗑️</button>
           <div class="card-preview">
-            <b>${nb.topic}</b><br><br>${firstPageText}
+            <b>${nb.topic}</b><br><br>${firstPageText.replace(/<[^>]*>?/gm, '')}
           </div>
           <div>
             <div class="card-title">${nb.name}</div>
@@ -953,7 +658,7 @@
     function filterCategory(cat) {
       currentFilter = cat;
       document.getElementById('current-category-title').innerText = cat;
-      toggleSidebar(); // Close sidebar after selecting
+      toggleSidebar();
       renderNotes();
     }
 
@@ -961,6 +666,7 @@
       event.stopPropagation();
       if(confirm("Kya aap is notebook ko delete karna chahte hain?")) {
         notebooks = notebooks.filter(n => n.id !== id);
+        saveToStorage();
         renderNotes();
       }
     }
@@ -974,11 +680,11 @@
     }
 
     function saveNewNotebook() {
-      const name = document.getElementById('new-name').value || "Untitled Notebook";
-      const pages = parseInt(document.getElementById('new-pages').value) || 5;
+      const name = document.getElementById('new-name').value || "Untitled Bill Book";
+      const pages = parseInt(document.getElementById('new-pages').value) || 10;
       const type = document.getElementById('new-type').value;
       const subject = document.getElementById('new-subject').value;
-      const topic = document.getElementById('new-topic').value || "General Notes";
+      const topic = document.getElementById('new-topic').value || "Billing Table";
 
       const today = new Date();
       const dateStr = `${today.getMonth()+1}/${today.getDate()}/${today.getFullYear()}`;
@@ -995,6 +701,7 @@
       };
 
       notebooks.push(newNb);
+      saveToStorage();
       closeAddModal();
       renderNotes();
     }
@@ -1010,6 +717,7 @@
 
       const editor = document.getElementById('nb-content');
       editor.className = `notebook-editor pattern-${activeNotebook.pageType}`;
+      editor.style.lineHeight = "26px";
 
       loadPageContent();
       document.getElementById('notebook-viewer').style.display = 'flex';
@@ -1022,21 +730,66 @@
       document.getElementById('btn-prev-page').disabled = currentPageIndex === 1;
       document.getElementById('btn-next-page').disabled = currentPageIndex === activeNotebook.totalPages;
 
-      document.getElementById('nb-content').value = activeNotebook.pagesData[currentPageIndex] || '';
+      document.getElementById('nb-content').innerHTML = activeNotebook.pagesData[currentPageIndex] || '';
+    }
+
+    function formatText(command, value = null) {
+      document.execCommand(command, false, value);
+      saveCurrentPageText();
+    }
+
+    function changeFontSize(size) {
+      if(!size) return;
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return;
+      const span = document.createElement('span');
+      span.style.fontSize = size;
+      span.appendChild(selection.getRangeAt(0).extractContents());
+      selection.getRangeAt(0).insertNode(span);
+      saveCurrentPageText();
+    }
+
+    function changeFontFamily(font) {
+      if(!font) return;
+      document.execCommand('fontName', false, font);
+      saveCurrentPageText();
+    }
+
+    function changeLineSpacing(spacing) {
+      if(!spacing) return;
+      const editor = document.getElementById('nb-content');
+      editor.style.lineHeight = spacing;
+      if(editor.classList.contains('pattern-lined')) {
+        editor.style.backgroundSize = `100% ${spacing}`;
+      }
+    }
+
+    function clearPage() {
+      if(confirm("Kya aap is page ka sara text mitaana chahte hain?")) {
+        document.getElementById('nb-content').innerHTML = '';
+        saveCurrentPageText();
+      }
+    }
+
+    function saveCurrentPageText() {
+      if (activeNotebook) {
+        activeNotebook.pagesData[currentPageIndex] = document.getElementById('nb-content').innerHTML;
+        saveToStorage();
+      }
     }
 
     document.getElementById('nb-content').addEventListener('input', function() {
-      if (activeNotebook) {
-        activeNotebook.pagesData[currentPageIndex] = this.value;
-      }
+      saveCurrentPageText();
     });
 
     function changePage(direction) {
+      saveCurrentPageText();
       currentPageIndex += direction;
       loadPageContent();
     }
 
     function closeNotebookViewer() {
+      saveCurrentPageText();
       document.getElementById('notebook-viewer').style.display = 'none';
       renderNotes();
     }
